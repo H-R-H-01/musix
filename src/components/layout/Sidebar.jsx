@@ -1,17 +1,17 @@
-import { Home, Compass, Library, PlaySquare, Settings, Heart } from 'lucide-react';
+import { Home, Compass, Library, PlaySquare, Settings, Heart, Plus, Mic, ShieldAlert } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { cn } from '../../lib/utils';
+import { useAuthStore } from '../../store/useAuthStore';
+import { useLibraryStore } from '../../store/useLibraryStore';
 
 export default function Sidebar() {
+  const { user } = useAuthStore();
+  const { playlists, createPlaylist } = useLibraryStore();
+
   const mainLinks = [
     { icon: <Home size={20} />, label: 'Home', path: '/' },
     { icon: <Compass size={20} />, label: 'Discover', path: '/discover' },
     { icon: <Library size={20} />, label: 'Library', path: '/library' }
-  ];
-
-  const libraryLinks = [
-    { icon: <PlaySquare size={20} />, label: 'Playlists', path: '/playlists' },
-    { icon: <Heart size={20} />, label: 'Liked Songs', path: '/liked' }
   ];
 
   return (
@@ -46,12 +46,20 @@ export default function Sidebar() {
         </div>
 
         <div>
-          <p className="px-4 text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">Library</p>
+          <div className="flex items-center justify-between px-4 mb-3">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Playlists</p>
+            <button 
+              onClick={() => createPlaylist('New Playlist')}
+              className="text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <Plus size={16} />
+            </button>
+          </div>
           <nav className="space-y-1">
-            {libraryLinks.map((link) => (
+            {playlists.map((playlist) => (
               <NavLink
-                key={link.path}
-                to={link.path}
+                key={playlist.id}
+                to={`/playlist/${playlist.id}`}
                 className={({ isActive }) =>
                   cn(
                     "flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-medium transition-colors",
@@ -59,12 +67,32 @@ export default function Sidebar() {
                   )
                 }
               >
-                {link.icon}
-                {link.label}
+                {playlist.isDefault ? <Heart size={20} /> : <PlaySquare size={20} />}
+                {playlist.name}
               </NavLink>
             ))}
           </nav>
         </div>
+
+        {user.role === 'admin' && (
+          <div>
+            <p className="px-4 text-xs font-semibold text-primary uppercase tracking-wider mb-3 flex items-center gap-1.5"><ShieldAlert size={14}/> Admin Panel</p>
+            <nav className="space-y-1">
+              <NavLink
+                to="/admin"
+                className={({ isActive }) =>
+                  cn(
+                    "flex items-center gap-3 px-4 py-2.5 rounded-md text-sm font-medium transition-colors text-primary",
+                    isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:text-foreground hover:bg-accent/50"
+                  )
+                }
+              >
+                <Mic size={20} />
+                Dashboard & Upload
+              </NavLink>
+            </nav>
+          </div>
+        )}
       </div>
     </aside>
   );

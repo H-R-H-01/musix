@@ -1,0 +1,52 @@
+import { create } from 'zustand'
+
+const MOCK_LIKED_SONGS = [
+  {
+    id: '1',
+    title: 'Neon Nights',
+    artist: 'Synthwave Boy',
+    cover_url: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=300&h=300',
+    duration: 215,
+  }
+];
+
+export const useLibraryStore = create((set) => ({
+  playlists: [
+    {
+      id: 'liked-music',
+      name: 'Liked Music',
+      description: 'Your favorite tracks',
+      isDefault: true,
+      cover_url: 'https://images.unsplash.com/photo-1493225457124-a1a2a5f5f924?auto=format&fit=crop&q=80&w=300&h=300',
+      songs: MOCK_LIKED_SONGS
+    },
+    {
+      id: 'p1',
+      name: 'Chill Vibes',
+      description: 'Relaxing sounds for a sunday afternoon',
+      isDefault: false,
+      cover_url: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&q=80&w=300&h=300',
+      songs: []
+    }
+  ],
+  homeSections: [
+    { id: '1', title: 'Good evening', type: 'grid' },
+    { id: '2', title: 'Made For You', type: 'list' }
+  ],
+  createPlaylist: (name) => set((state) => ({
+    playlists: [...state.playlists, {
+      id: Date.now().toString(),
+      name,
+      description: '',
+      isDefault: false,
+      cover_url: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=300&h=300', // default cover
+      songs: []
+    }]
+  })),
+  addSongToPlaylist: (playlistId, song) => set((state) => ({
+    playlists: state.playlists.map(p => 
+      p.id === playlistId ? { ...p, songs: [...p.songs, song] } : p
+    )
+  })),
+  updateHomeSections: (sections) => set({ homeSections: sections })
+}))

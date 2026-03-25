@@ -1,8 +1,11 @@
-import { Moon, Sun, Search, Bell } from 'lucide-react';
+import { Moon, Sun, Search, Bell, User as UserIcon } from 'lucide-react';
 import { useThemeStore } from '../../store/useThemeStore';
+import { useAuthStore } from '../../store/useAuthStore';
+import { Link } from 'react-router-dom';
 
 export default function Topbar() {
   const { theme, toggleTheme } = useThemeStore();
+  const { user, toggleRole } = useAuthStore();
 
   return (
     <header className="h-20 flex items-center justify-between px-8 shrink-0">
@@ -17,6 +20,13 @@ export default function Topbar() {
 
       <div className="flex items-center gap-4">
         <button 
+          onClick={toggleRole}
+          className="text-xs font-semibold px-3 py-1.5 rounded-full bg-accent text-muted-foreground hover:text-foreground hover:bg-border transition-colors border border-border flex items-center gap-2"
+        >
+          <UserIcon size={14} /> View as {user.role === 'admin' ? 'User' : 'Admin'}
+        </button>
+
+        <button 
           onClick={toggleTheme}
           className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
           aria-label="Toggle theme"
@@ -27,9 +37,9 @@ export default function Topbar() {
           <Bell size={20} />
           <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-foreground border-2 border-background"></span>
         </button>
-        <div className="w-10 h-10 rounded-full border border-border overflow-hidden cursor-pointer">
-          <img src="https://ui-avatars.com/api/?name=User&background=random" alt="User avatar" className="w-full h-full object-cover" />
-        </div>
+        <Link to="/profile" className="w-10 h-10 rounded-full border border-border overflow-hidden cursor-pointer hover:border-foreground transition-colors">
+          <img src={user.avatar} alt="User avatar" className="w-full h-full object-cover" />
+        </Link>
       </div>
     </header>
   );
