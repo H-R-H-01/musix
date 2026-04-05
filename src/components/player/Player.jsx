@@ -1,12 +1,22 @@
-import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat, Shuffle, Mic2, ListMusic, MonitorSpeaker } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat, Shuffle, Mic2, ListMusic, MonitorSpeaker, Heart, Share2 } from 'lucide-react';
 import { usePlayerStore } from '../../store/usePlayerStore';
+import { useLibraryStore } from '../../store/useLibraryStore';
+import { cn } from '../../lib/utils';
 
 export default function Player() {
   const { currentSong, isPlaying, setPlayState, volume, progress, duration } = usePlayerStore();
+  const { toggleLike, isLiked } = useLibraryStore();
 
   const handlePlayPause = () => {
     if (currentSong) {
       setPlayState(!isPlaying);
+    }
+  };
+
+  const handleShare = () => {
+    if (currentSong) {
+      navigator.clipboard.writeText(`https://musix.app/song/${currentSong.id}`);
+      alert('Link copied to clipboard!');
     }
   };
 
@@ -15,6 +25,8 @@ export default function Player() {
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
+
+  const liked = useLibraryStore(isLiked(currentSong?.id));
 
   return (
     <div className="fixed bottom-0 left-0 right-0 h-24 bg-player/80 backdrop-blur-xl border-t border-border px-6 flex items-center justify-between z-50 transition-colors shadow-[0_-4px_24px_rgba(0,0,0,0.05)] dark:shadow-none">
@@ -28,9 +40,26 @@ export default function Player() {
               alt={currentSong.title} 
               className="w-14 h-14 rounded-md object-cover shadow-md"
             />
-            <div className="flex flex-col">
-              <h4 className="text-sm font-semibold truncate max-w-[200px]">{currentSong.title}</h4>
-              <p className="text-xs text-muted-foreground truncate max-w-[200px] hover:underline cursor-pointer">{currentSong.artist}</p>
+            <div className="flex flex-col min-w-0">
+              <h4 className="text-sm font-semibold truncate max-w-[150px]">{currentSong.title}</h4>
+              <p className="text-xs text-muted-foreground truncate max-w-[150px] hover:underline cursor-pointer">{currentSong.artist}</p>
+            </div>
+            <div className="flex items-center gap-1.5 ml-2">
+              <button 
+                onClick={() => toggleLike(currentSong)}
+                className={cn(
+                  "p-2 rounded-full transition-colors",
+                  liked ? "text-red-500 hover:bg-red-500/10" : "text-muted-foreground hover:bg-accent"
+                )}
+              >
+                <Heart size={18} fill={liked ? "currentColor" : "none"} />
+              </button>
+              <button 
+                onClick={handleShare}
+                className="p-2 rounded-full text-muted-foreground hover:bg-accent transition-colors"
+              >
+                <Share2 size={18} />
+              </button>
             </div>
           </>
         ) : (

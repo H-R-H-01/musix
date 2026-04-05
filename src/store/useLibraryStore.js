@@ -48,5 +48,28 @@ export const useLibraryStore = create((set) => ({
       p.id === playlistId ? { ...p, songs: [...p.songs, song] } : p
     )
   })),
+  toggleLike: (song) => set((state) => {
+    const likedMusic = state.playlists.find(p => p.id === 'liked-music');
+    const isAlreadyLiked = likedMusic.songs.some(s => s.id === song.id);
+    
+    return {
+      playlists: state.playlists.map(p => {
+        if (p.id === 'liked-music') {
+          return {
+            ...p,
+            songs: isAlreadyLiked 
+              ? p.songs.filter(s => s.id !== song.id) 
+              : [...p.songs, song]
+          };
+        }
+        return p;
+      })
+    };
+  }),
+  isLiked: (songId) => (state) => {
+    const likedMusic = state.playlists.find(p => p.id === 'liked-music');
+    return likedMusic?.songs.some(s => s.id === songId);
+  },
   updateHomeSections: (sections) => set({ homeSections: sections })
 }))
+

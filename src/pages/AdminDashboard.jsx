@@ -9,7 +9,7 @@ export default function AdminDashboard() {
   const { homeSections, updateHomeSections } = useLibraryStore();
   
   const [uploadStatus, setUploadStatus] = useState(''); // '', 'uploading', 'success', 'error'
-  const [songData, setSongData] = useState({ title: '', artist: '', genre: 'Pop' });
+  const [songData, setSongData] = useState({ title: '', artist: '', genre: 'Pop', lyrics: '' });
   const [audioFile, setAudioFile] = useState(null);
   const [coverFile, setCoverFile] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -59,7 +59,8 @@ export default function AdminDashboard() {
     // Mock upload simulation
     setTimeout(() => {
       setUploadStatus('success');
-      setSongData({ title: '', artist: '', genre: 'Pop' });
+      setSongData({ title: '', artist: '', genre: 'Pop', lyrics: '' });
+
       setAudioFile(null);
       setCoverFile(null);
       setTimeout(() => setUploadStatus(''), 4000);
@@ -212,6 +213,16 @@ export default function AdminDashboard() {
                   <span className="text-xs text-muted-foreground">Upload JPG/PNG</span>
                 </div>
               </div>
+            </div>
+
+            <div>
+              <label className="text-sm font-semibold text-muted-foreground block mb-1.5 px-1">Lyrics (Optional)</label>
+              <textarea 
+                value={songData.lyrics}
+                onChange={(e) => setSongData(prev => ({ ...prev, lyrics: e.target.value }))}
+                className="w-full h-32 bg-background rounded-xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 border border-border resize-none"
+                placeholder="Paste song lyrics here..."
+              />
             </div>
 
             <div className="pt-2">
