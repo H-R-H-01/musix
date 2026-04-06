@@ -4,8 +4,20 @@ import { useLibraryStore } from '../../store/useLibraryStore';
 import { cn } from '../../lib/utils';
 
 export default function Player() {
-  const { currentSong, isPlaying, setPlayState, volume, progress, duration } = usePlayerStore();
+  const { volume, progress, duration, setPlayState, isPlaying, currentSong } = usePlayerStore();
+  const { user, incrementListeningTime } = useAuthStore();
   const { toggleLike, isLiked } = useLibraryStore();
+
+  useEffect(() => {
+    let interval;
+    if (isPlaying && currentSong) {
+      interval = setInterval(() => {
+        incrementListeningTime(1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isPlaying, currentSong]);
+
 
   const handlePlayPause = () => {
     if (currentSong) {
