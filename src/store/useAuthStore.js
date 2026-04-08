@@ -27,13 +27,22 @@ export const useAuthStore = create((set) => ({
       connections: state.user.connections.map(c => c.id === connId ? { ...c, synergy: c.synergy + points } : c)
     }
   })),
+  updateProfile: (data) => set((state) => ({
+    user: { ...state.user, ...data }
+  })),
+  removeConnection: (id) => set((state) => ({
+    user: { 
+      ...state.user, 
+      connections: state.user.connections.filter(c => c.id !== id) 
+    }
+  })),
   toggleRole: () => set((state) => ({
     user: {
       ...state.user,
-      role: state.user.role === 'admin' ? 'user' : 'admin',
-      name: state.user.role === 'admin' ? 'Jane Doe (User)' : 'Admin User'
+      role: state.user.role === 'admin' ? 'user' : 'admin'
     }
   }))
 }))
+
 
 
