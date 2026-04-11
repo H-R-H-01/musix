@@ -1,12 +1,14 @@
-import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat, Shuffle, Mic2, ListMusic, MonitorSpeaker, Heart, Share2 } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward, Volume2, Repeat, Shuffle, Mic2, ListMusic, MonitorSpeaker, Heart, Share2, Download } from 'lucide-react';
+import { useEffect } from 'react';
 import { usePlayerStore } from '../../store/usePlayerStore';
 import { useLibraryStore } from '../../store/useLibraryStore';
+import { useAuthStore } from '../../store/useAuthStore';
 import { cn } from '../../lib/utils';
 
 export default function Player() {
   const { volume, progress, duration, setPlayState, isPlaying, currentSong } = usePlayerStore();
   const { user, incrementListeningTime } = useAuthStore();
-  const { toggleLike, isLiked } = useLibraryStore();
+  const { toggleLike, isLiked, toggleDownload, isDownloaded } = useLibraryStore();
 
   useEffect(() => {
     let interval;
@@ -39,6 +41,7 @@ export default function Player() {
   };
 
   const liked = useLibraryStore(isLiked(currentSong?.id));
+  const downloaded = useLibraryStore(isDownloaded(currentSong?.id));
 
   return (
     <div className="fixed bottom-0 left-0 right-0 h-24 bg-player/80 backdrop-blur-xl border-t border-border px-6 flex items-center justify-between z-50 transition-colors shadow-[0_-4px_24px_rgba(0,0,0,0.05)] dark:shadow-none">
@@ -72,8 +75,18 @@ export default function Player() {
               >
                 <Share2 size={18} />
               </button>
+              <button 
+                onClick={() => toggleDownload(currentSong)}
+                className={cn(
+                  "p-2 rounded-full transition-colors",
+                  downloaded ? "text-primary hover:bg-primary/10" : "text-muted-foreground hover:bg-accent"
+                )}
+              >
+                <Download size={18} className={cn(downloaded && "animate-pulse")} />
+              </button>
             </div>
           </>
+
         ) : (
           <div className="flex items-center gap-4 opacity-50">
             <div className="w-14 h-14 rounded-md bg-accent flex items-center justify-center">

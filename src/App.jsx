@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import AppLayout from './components/layout/AppLayout';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
+import Downloads from './pages/Downloads';
 import AdminDashboard from './pages/AdminDashboard';
 import { useThemeStore } from './store/useThemeStore';
 import { Compass, Library } from 'lucide-react';
@@ -35,6 +36,7 @@ function App() {
             </div>
           } />
           <Route path="profile" element={<Profile />} />
+          <Route path="downloads" element={<Downloads />} />
           <Route path="admin" element={<AdminDashboard />} />
           <Route path="playlist/:id" element={<div className="p-8">Playlist View</div>} />
         </Route>

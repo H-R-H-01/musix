@@ -70,6 +70,19 @@ export const useLibraryStore = create((set) => ({
     const likedMusic = state.playlists.find(p => p.id === 'liked-music');
     return likedMusic?.songs.some(s => s.id === songId);
   },
+  downloadedSongs: [],
+  toggleDownload: (song) => set((state) => {
+    const isDownloaded = state.downloadedSongs.some(s => s.id === song.id);
+    return {
+      downloadedSongs: isDownloaded
+        ? state.downloadedSongs.filter(s => s.id !== song.id)
+        : [...state.downloadedSongs, { ...song, downloadedAt: new Date().toISOString() }]
+    };
+  }),
+  isDownloaded: (songId) => (state) => {
+    return state.downloadedSongs.some(s => s.id === songId);
+  },
   updateHomeSections: (sections) => set({ homeSections: sections })
 }))
+
 

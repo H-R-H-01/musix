@@ -1,4 +1,4 @@
-import { Home, Compass, Library, PlaySquare, Settings, Heart, Plus, Mic, ShieldAlert } from 'lucide-react';
+import { Home, Compass, Library, PlaySquare, Settings, Heart, Plus, Mic, ShieldAlert, Download } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { cn } from '../../lib/utils';
 import { useAuthStore } from '../../store/useAuthStore';
@@ -11,7 +11,8 @@ export default function Sidebar() {
   const mainLinks = [
     { icon: <Home size={20} />, label: 'Home', path: '/' },
     { icon: <Compass size={20} />, label: 'Discover', path: '/discover' },
-    { icon: <Library size={20} />, label: 'Library', path: '/library' }
+    { icon: <Library size={20} />, label: 'Library', path: '/library' },
+    { icon: <Download size={20} />, label: 'Downloads', path: '/downloads' }
   ];
 
   return (

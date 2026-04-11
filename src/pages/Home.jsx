@@ -94,6 +94,12 @@ export default function Home() {
                               <Heart size={14} fill={liked ? "currentColor" : "none"} />
                             </button>
                             <button 
+                              onClick={(e) => { e.stopPropagation(); toggleDownload(song); }}
+                              className={cn("w-8 h-8 rounded-full bg-background/80 backdrop-blur-md flex items-center justify-center transition-all", downloaded ? "text-primary" : "text-muted-foreground")}
+                            >
+                              <Download size={14} />
+                            </button>
+                            <button 
                               onClick={(e) => { e.stopPropagation(); handleShare(song); }}
                               className="w-8 h-8 rounded-full bg-background/80 backdrop-blur-md flex items-center justify-center text-muted-foreground transition-all"
                             >
