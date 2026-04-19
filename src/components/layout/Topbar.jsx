@@ -19,6 +19,12 @@ export default function Topbar() {
       </div>
 
       <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20">
+           <span className="text-[10px] font-black uppercase text-primary tracking-widest leading-none">
+             {Math.floor(user.listeningTime / 60)} Minutes Listened
+           </span>
+        </div>
+
         <button 
           onClick={toggleRole}
           className="text-xs font-semibold px-3 py-1.5 rounded-full bg-accent text-muted-foreground hover:text-foreground hover:bg-border transition-colors border border-border flex items-center gap-2"

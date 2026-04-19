@@ -6,7 +6,7 @@ import { useAuthStore } from '../../store/useAuthStore';
 import { cn } from '../../lib/utils';
 
 export default function Player() {
-  const { volume, progress, duration, setPlayState, isPlaying, currentSong } = usePlayerStore();
+  const { volume, progress, duration, setPlayState, isPlaying, currentSong, playNext, playPrevious, setProgress } = usePlayerStore();
   const { user, incrementListeningTime } = useAuthStore();
   const { toggleLike, isLiked, toggleDownload, isDownloaded } = useLibraryStore();
 
@@ -25,6 +25,20 @@ export default function Player() {
     if (currentSong) {
       setPlayState(!isPlaying);
     }
+  };
+
+  const handleSeek = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const percentage = x / rect.width;
+    const newTime = percentage * duration;
+    
+    // We need to communicate this to the AudioController
+    // The easiest way is to add a seek property to the store or use a custom event
+    // For now, let's just update the store progress, and I'll update AudioController to listen for changes
+    setProgress(newTime);
+    // Triggering a custom event that AudioController can listen to
+    window.dispatchEvent(new CustomEvent('audio-seek', { detail: newTime }));
   };
 
   const handleShare = () => {
@@ -103,32 +117,41 @@ export default function Player() {
       {/* Controls */}
       <div className="w-1/3 flex border-red-500 flex-col items-center justify-center">
         <div className="flex items-center gap-6 mb-2">
-          <button className="text-muted-foreground hover:text-foreground transition-colors">
-            <Shuffle size={18} />
+          <button className="text-muted-foreground hover:text-foreground transition-colors group">
+            <Shuffle size={18} className="group-active:scale-95" />
           </button>
-          <button className="text-foreground hover:text-muted-foreground transition-colors">
-            <SkipBack size={20} fill="currentColor" />
+          <button 
+            onClick={playPrevious}
+            className="text-foreground hover:text-muted-foreground transition-colors group"
+          >
+            <SkipBack size={20} fill="currentColor" className="group-active:-translate-x-1 transition-transform" />
           </button>
           
           <button 
             onClick={handlePlayPause}
-            className="w-10 h-10 rounded-full bg-foreground text-background flex items-center justify-center hover:scale-105 transition-transform"
+            className="w-10 h-10 rounded-full bg-foreground text-background flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg"
           >
             {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-1" />}
           </button>
 
-          <button className="text-foreground hover:text-muted-foreground transition-colors">
-            <SkipForward size={20} fill="currentColor" />
+          <button 
+            onClick={playNext}
+            className="text-foreground hover:text-muted-foreground transition-colors group"
+          >
+            <SkipForward size={20} fill="currentColor" className="group-active:translate-x-1 transition-transform" />
           </button>
-          <button className="text-muted-foreground hover:text-foreground transition-colors">
-            <Repeat size={18} />
+          <button className="text-muted-foreground hover:text-foreground transition-colors group">
+            <Repeat size={18} className="group-active:rotate-12 transition-transform" />
           </button>
         </div>
 
         {/* Progress Bar */}
         <div className="w-full max-w-md flex items-center gap-3 text-xs text-muted-foreground font-medium">
           <span className="w-8 text-right">{formatTime(progress)}</span>
-          <div className="flex-1 h-1.5 bg-accent rounded-full overflow-hidden cursor-pointer group hover:h-2 transition-all">
+          <div 
+            className="flex-1 h-1.5 bg-accent rounded-full overflow-hidden cursor-pointer group hover:h-2 transition-all relative"
+            onClick={handleSeek}
+          >
             <div 
               className="h-full bg-foreground rounded-full relative group-hover:bg-primary transition-colors"
               style={{ width: `${(progress / Math.max(duration, 1)) * 100}%` }}

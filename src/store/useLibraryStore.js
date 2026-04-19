@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { persist } from 'zustand/middleware'
 
 const MOCK_LIKED_SONGS = [
   {
@@ -10,7 +11,9 @@ const MOCK_LIKED_SONGS = [
   }
 ];
 
-export const useLibraryStore = create((set) => ({
+export const useLibraryStore = create(
+  persist(
+    (set, get) => ({
   playlists: [
     {
       id: 'liked-music',
@@ -30,8 +33,10 @@ export const useLibraryStore = create((set) => ({
     }
   ],
   homeSections: [
+    { id: 'recently-played', title: 'Recently Played', type: 'grid', personalized: true },
     { id: '1', title: 'Good evening', type: 'grid' },
-    { id: '2', title: 'Made For You', type: 'list' }
+    { id: '2', title: 'Made For You', type: 'list' },
+    { id: 'weekly-highlights', title: 'Weekly Highlights', type: 'list' }
   ],
   createPlaylist: (name) => set((state) => ({
     playlists: [...state.playlists, {
@@ -71,6 +76,7 @@ export const useLibraryStore = create((set) => ({
     return likedMusic?.songs.some(s => s.id === songId);
   },
   downloadedSongs: [],
+  recentlyPlayed: [],
   toggleDownload: (song) => set((state) => {
     const isDownloaded = state.downloadedSongs.some(s => s.id === song.id);
     return {
@@ -82,7 +88,18 @@ export const useLibraryStore = create((set) => ({
   isDownloaded: (songId) => (state) => {
     return state.downloadedSongs.some(s => s.id === songId);
   },
+  addToRecentlyPlayed: (song) => set((state) => {
+    const filtered = state.recentlyPlayed.filter(s => s.id !== song.id);
+    return {
+      recentlyPlayed: [song, ...filtered].slice(0, 10)
+    };
+  }),
   updateHomeSections: (sections) => set({ homeSections: sections })
-}))
+}),
+{
+  name: 'musix-library',
+}
+)
+)
 
 

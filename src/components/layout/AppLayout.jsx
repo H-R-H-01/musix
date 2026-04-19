@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import Player from '../player/Player';
+import AudioController from '../player/AudioController';
 
 export default function AppLayout() {
   return (
@@ -14,6 +15,7 @@ export default function AppLayout() {
         </main>
       </div>
       <Player />
+      <AudioController />
     </div>
   );
 }
