@@ -94,6 +94,10 @@ export const useLibraryStore = create(
       recentlyPlayed: [song, ...filtered].slice(0, 10)
     };
   }),
+  karaokeRecordings: [],
+  addKaraokeRecording: (recording) => set((state) => ({
+    karaokeRecordings: [recording, ...state.karaokeRecordings]
+  })),
   updateHomeSections: (sections) => set({ homeSections: sections })
 }),
 {

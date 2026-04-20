@@ -4,6 +4,7 @@ import AppLayout from './components/layout/AppLayout';
 import Home from './pages/Home';
 import Profile from './pages/Profile';
 import Downloads from './pages/Downloads';
+import Recordings from './pages/Recordings';
 import AdminDashboard from './pages/AdminDashboard';
 import { useThemeStore } from './store/useThemeStore';
 import { Compass, Library } from 'lucide-react';
@@ -37,6 +38,7 @@ function App() {
           } />
           <Route path="profile" element={<Profile />} />
           <Route path="downloads" element={<Downloads />} />
+          <Route path="recordings" element={<Recordings />} />
           <Route path="admin" element={<AdminDashboard />} />
           <Route path="playlist/:id" element={<div className="p-8">Playlist View</div>} />
         </Route>

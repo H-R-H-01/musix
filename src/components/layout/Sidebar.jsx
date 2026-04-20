@@ -12,6 +12,7 @@ export default function Sidebar() {
     { icon: <Home size={20} />, label: 'Home', path: '/' },
     { icon: <Compass size={20} />, label: 'Discover', path: '/discover' },
     { icon: <Library size={20} />, label: 'Library', path: '/library' },
+    { icon: <Mic size={20} />, label: 'Recordings', path: '/recordings' },
     { icon: <Download size={20} />, label: 'Downloads', path: '/downloads' }
   ];
 

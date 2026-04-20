@@ -13,6 +13,10 @@ export const usePlayerStore = create((set) => ({
   setProgress: (progress) => set({ progress }),
   setDuration: (duration) => set({ duration }),
   setQueue: (queue) => set({ queue }),
+  isKaraokeMode: false,
+  isRecording: false,
+  setKaraokeMode: (isKaraokeMode) => set({ isKaraokeMode }),
+  setRecording: (isRecording) => set({ isRecording }),
   playNext: () => set((state) => {
     // Basic logic for play next
     const currentIndex = state.queue.findIndex(s => s.id === state.currentSong?.id);

@@ -6,7 +6,7 @@ import { useAuthStore } from '../../store/useAuthStore';
 import { cn } from '../../lib/utils';
 
 export default function Player() {
-  const { volume, progress, duration, setPlayState, isPlaying, currentSong, playNext, playPrevious, setProgress } = usePlayerStore();
+  const { volume, progress, duration, setPlayState, isPlaying, currentSong, playNext, playPrevious, setProgress, isKaraokeMode, setKaraokeMode } = usePlayerStore();
   const { user, incrementListeningTime } = useAuthStore();
   const { toggleLike, isLiked, toggleDownload, isDownloaded } = useLibraryStore();
 
@@ -165,7 +165,12 @@ export default function Player() {
 
       {/* Extra Controls */}
       <div className="w-1/3 flex items-center justify-end gap-4 text-muted-foreground">
-        <button className="hover:text-foreground transition-colors"><Mic2 size={18} /></button>
+        <button 
+          onClick={() => setKaraokeMode(!isKaraokeMode)}
+          className={cn("hover:text-foreground transition-colors", isKaraokeMode && "text-primary")}
+        >
+          <Mic2 size={18} />
+        </button>
         <button className="hover:text-foreground transition-colors"><ListMusic size={18} /></button>
         <button className="hover:text-foreground transition-colors"><MonitorSpeaker size={18} /></button>
         

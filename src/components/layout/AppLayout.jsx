@@ -3,6 +3,7 @@ import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import Player from '../player/Player';
 import AudioController from '../player/AudioController';
+import KaraokeOverlay from '../player/KaraokeOverlay';
 
 export default function AppLayout() {
   return (
@@ -16,6 +17,7 @@ export default function AppLayout() {
       </div>
       <Player />
       <AudioController />
+      <KaraokeOverlay />
     </div>
   );
 }
