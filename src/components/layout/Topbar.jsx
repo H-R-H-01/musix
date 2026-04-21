@@ -8,43 +8,58 @@ export default function Topbar() {
   const { user, toggleRole } = useAuthStore();
 
   return (
-    <header className="h-20 flex items-center justify-between px-8 shrink-0">
-      <div className="relative w-96">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" size={18} />
+    <header className="h-20 flex items-center justify-between px-8 shrink-0 glass dark:glass-dark border-b border-border/30 sticky top-0 z-30">
+      <div className="relative w-96 group">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={18} />
         <input 
           type="text" 
           placeholder="Search for artists, songs, or podcasts..." 
-          className="w-full h-10 bg-accent/50 rounded-full pl-10 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-border transition-all border border-transparent hover:border-border"
+          className="w-full h-11 bg-secondary/50 rounded-2xl pl-12 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:bg-background transition-all border border-transparent hover:border-border/50"
         />
       </div>
 
-      <div className="flex items-center gap-4">
-        <div className="flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full border border-primary/20">
-           <span className="text-[10px] font-black uppercase text-primary tracking-widest leading-none">
-             {Math.floor(user.listeningTime / 60)} Minutes Listened
+      <div className="flex items-center gap-6">
+        <div className="hidden lg:flex items-center gap-3 px-4 py-2 bg-primary/5 rounded-2xl border border-primary/10">
+           <div className="relative flex h-2 w-2">
+             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+             <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+           </div>
+           <span className="text-[11px] font-bold uppercase text-primary tracking-widest leading-none">
+             {Math.floor(user.listeningTime / 60)}m Listened
            </span>
         </div>
 
         <button 
           onClick={toggleRole}
-          className="text-xs font-semibold px-3 py-1.5 rounded-full bg-accent text-muted-foreground hover:text-foreground hover:bg-border transition-colors border border-border flex items-center gap-2"
+          className="text-xs font-bold px-4 py-2 rounded-xl bg-secondary/80 text-muted-foreground hover:text-foreground hover:bg-secondary transition-all border border-border/30 flex items-center gap-2 active:scale-95"
         >
-          <UserIcon size={14} /> View as {user.role === 'admin' ? 'User' : 'Admin'}
+          <UserIcon size={14} className="text-primary" /> 
+          Switch to {user.role === 'admin' ? 'User' : 'Admin'}
         </button>
 
-        <button 
-          onClick={toggleTheme}
-          className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
-          aria-label="Toggle theme"
-        >
-          {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-        </button>
-        <button className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-accent text-muted-foreground hover:text-foreground transition-colors relative">
-          <Bell size={20} />
-          <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-foreground border-2 border-background"></span>
-        </button>
-        <Link to="/profile" className="w-10 h-10 rounded-full border border-border overflow-hidden cursor-pointer hover:border-foreground transition-colors">
-          <img src={user.avatar} alt="User avatar" className="w-full h-full object-cover" />
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={toggleTheme}
+            className="w-10 h-10 rounded-xl flex items-center justify-center bg-secondary/50 hover:bg-secondary text-muted-foreground hover:text-primary transition-all active:scale-90"
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
+          
+          <button className="w-10 h-10 rounded-xl flex items-center justify-center bg-secondary/50 hover:bg-secondary text-muted-foreground hover:text-primary transition-all relative active:scale-90">
+            <Bell size={18} />
+            <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-primary border-2 border-background"></span>
+          </button>
+        </div>
+
+        <Link to="/profile" className="flex items-center gap-3 pl-2 border-l border-border/30 group">
+          <div className="text-right hidden sm:block">
+            <p className="text-xs font-bold leading-none mb-1 group-hover:text-primary transition-colors">{user.name}</p>
+            <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">Pro Member</p>
+          </div>
+          <div className="w-10 h-10 rounded-xl border-2 border-transparent group-hover:border-primary/50 overflow-hidden cursor-pointer transition-all shadow-md group-hover:shadow-primary/10">
+            <img src={user.avatar} alt="User avatar" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+          </div>
         </Link>
       </div>
     </header>

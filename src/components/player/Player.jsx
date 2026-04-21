@@ -30,14 +30,10 @@ export default function Player() {
   const handleSeek = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
-    const percentage = x / rect.width;
+    const percentage = Math.max(0, Math.min(1, x / rect.width));
     const newTime = percentage * duration;
     
-    // We need to communicate this to the AudioController
-    // The easiest way is to add a seek property to the store or use a custom event
-    // For now, let's just update the store progress, and I'll update AudioController to listen for changes
     setProgress(newTime);
-    // Triggering a custom event that AudioController can listen to
     window.dispatchEvent(new CustomEvent('audio-seek', { detail: newTime }));
   };
 
@@ -58,127 +54,129 @@ export default function Player() {
   const downloaded = useLibraryStore(isDownloaded(currentSong?.id));
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 h-24 bg-player/80 backdrop-blur-xl border-t border-border px-6 flex items-center justify-between z-50 transition-colors shadow-[0_-4px_24px_rgba(0,0,0,0.05)] dark:shadow-none">
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[95%] max-w-6xl h-24 glass dark:glass-dark rounded-[2rem] px-8 flex items-center justify-between z-50 transition-all duration-500 shadow-premium group/player">
       
       {/* Current Song Details */}
-      <div className="w-1/3 flex items-center gap-4">
+      <div className="w-1/4 flex items-center gap-5">
         {currentSong ? (
           <>
-            <img 
-              src={currentSong.cover_url} 
-              alt={currentSong.title} 
-              className="w-14 h-14 rounded-md object-cover shadow-md"
-            />
-            <div className="flex flex-col min-w-0">
-              <h4 className="text-sm font-semibold truncate max-w-[150px]">{currentSong.title}</h4>
-              <p className="text-xs text-muted-foreground truncate max-w-[150px] hover:underline cursor-pointer">{currentSong.artist}</p>
+            <div className="relative group/cover">
+              <img 
+                src={currentSong.cover_url} 
+                alt={currentSong.title} 
+                className="w-16 h-16 rounded-2xl object-cover shadow-lg group-hover/cover:scale-105 transition-transform duration-500"
+              />
+              <div className={cn(
+                "absolute inset-0 rounded-2xl bg-primary/20 animate-pulse-subtle",
+                !isPlaying && "hidden"
+              )} />
             </div>
-            <div className="flex items-center gap-1.5 ml-2">
-              <button 
-                onClick={() => toggleLike(currentSong)}
-                className={cn(
-                  "p-2 rounded-full transition-colors",
-                  liked ? "text-red-500 hover:bg-red-500/10" : "text-muted-foreground hover:bg-accent"
-                )}
-              >
-                <Heart size={18} fill={liked ? "currentColor" : "none"} />
-              </button>
-              <button 
-                onClick={handleShare}
-                className="p-2 rounded-full text-muted-foreground hover:bg-accent transition-colors"
-              >
-                <Share2 size={18} />
-              </button>
-              <button 
-                onClick={() => toggleDownload(currentSong)}
-                className={cn(
-                  "p-2 rounded-full transition-colors",
-                  downloaded ? "text-primary hover:bg-primary/10" : "text-muted-foreground hover:bg-accent"
-                )}
-              >
-                <Download size={18} className={cn(downloaded && "animate-pulse")} />
-              </button>
+            <div className="flex flex-col min-w-0">
+              <h4 className="text-[15px] font-bold truncate group-hover/player:text-primary transition-colors">{currentSong.title}</h4>
+              <p className="text-xs font-semibold text-muted-foreground truncate hover:text-foreground cursor-pointer transition-colors mt-0.5">{currentSong.artist}</p>
             </div>
           </>
-
         ) : (
-          <div className="flex items-center gap-4 opacity-50">
-            <div className="w-14 h-14 rounded-md bg-accent flex items-center justify-center">
-               <ListMusic size={20} className="text-muted-foreground" />
+          <div className="flex items-center gap-4 opacity-40">
+            <div className="w-16 h-16 rounded-2xl bg-secondary flex items-center justify-center border border-border/20">
+               <ListMusic size={24} className="text-muted-foreground" />
             </div>
-            <div className="flex flex-col gap-1.5">
-              <div className="w-24 h-3 rounded-full bg-accent"></div>
-              <div className="w-16 h-2 rounded-full bg-border"></div>
+            <div className="flex flex-col gap-2">
+              <div className="w-28 h-4 rounded-full bg-secondary"></div>
+              <div className="w-16 h-3 rounded-full bg-secondary/50"></div>
             </div>
           </div>
         )}
       </div>
 
-      {/* Controls */}
-      <div className="w-1/3 flex border-red-500 flex-col items-center justify-center">
-        <div className="flex items-center gap-6 mb-2">
-          <button className="text-muted-foreground hover:text-foreground transition-colors group">
-            <Shuffle size={18} className="group-active:scale-95" />
+      {/* Controls & Progress */}
+      <div className="flex-1 flex flex-col items-center justify-center max-w-xl mx-8">
+        <div className="flex items-center gap-8 mb-3">
+          <button className="text-muted-foreground hover:text-primary transition-all active:scale-90">
+            <Shuffle size={20} />
           </button>
           <button 
             onClick={playPrevious}
-            className="text-foreground hover:text-muted-foreground transition-colors group"
+            className="text-foreground/80 hover:text-foreground transition-all active:scale-90"
           >
-            <SkipBack size={20} fill="currentColor" className="group-active:-translate-x-1 transition-transform" />
+            <SkipBack size={24} fill="currentColor" />
           </button>
           
           <button 
             onClick={handlePlayPause}
-            className="w-10 h-10 rounded-full bg-foreground text-background flex items-center justify-center hover:scale-105 active:scale-95 transition-all shadow-lg"
+            className="w-14 h-14 rounded-2xl bg-primary text-white flex items-center justify-center hover:scale-110 hover:shadow-xl hover:shadow-primary/30 active:scale-95 transition-all outline-none"
           >
-            {isPlaying ? <Pause size={20} fill="currentColor" /> : <Play size={20} fill="currentColor" className="ml-1" />}
+            {isPlaying ? <Pause size={28} fill="currentColor" /> : <Play size={28} fill="currentColor" className="ml-1" />}
           </button>
 
           <button 
             onClick={playNext}
-            className="text-foreground hover:text-muted-foreground transition-colors group"
+            className="text-foreground/80 hover:text-foreground transition-all active:scale-90"
           >
-            <SkipForward size={20} fill="currentColor" className="group-active:translate-x-1 transition-transform" />
+            <SkipForward size={24} fill="currentColor" />
           </button>
-          <button className="text-muted-foreground hover:text-foreground transition-colors group">
-            <Repeat size={18} className="group-active:rotate-12 transition-transform" />
+          <button className="text-muted-foreground hover:text-primary transition-all active:scale-90">
+            <Repeat size={20} />
           </button>
         </div>
 
-        {/* Progress Bar */}
-        <div className="w-full max-w-md flex items-center gap-3 text-xs text-muted-foreground font-medium">
-          <span className="w-8 text-right">{formatTime(progress)}</span>
+        {/* Improved Progress Bar */}
+        <div className="w-full flex items-center gap-4 text-[10px] font-bold text-muted-foreground/80 tracking-widest">
+          <span className="w-10 text-right tabular-nums">{formatTime(progress)}</span>
           <div 
-            className="flex-1 h-1.5 bg-accent rounded-full overflow-hidden cursor-pointer group hover:h-2 transition-all relative"
+            className="flex-1 h-1.5 bg-secondary/50 rounded-full cursor-pointer group/progress relative overflow-hidden"
             onClick={handleSeek}
           >
+            <div className="absolute inset-0 bg-secondary/30" />
             <div 
-              className="h-full bg-foreground rounded-full relative group-hover:bg-primary transition-colors"
+              className="h-full bg-linear-to-r from-primary to-primary/60 relative group-hover/progress:from-primary group-hover/progress:to-primary transition-all rounded-full"
               style={{ width: `${(progress / Math.max(duration, 1)) * 100}%` }}
             >
-               <div className="opacity-0 group-hover:opacity-100 absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-foreground rounded-full shadow-sm"></div>
+               <div className="absolute right-0 top-0 bottom-0 w-2 bg-white/30 backdrop-blur-sm" />
             </div>
           </div>
-          <span className="w-8">{formatTime(duration)}</span>
+          <span className="w-10 tabular-nums">{formatTime(duration)}</span>
         </div>
       </div>
 
-      {/* Extra Controls */}
-      <div className="w-1/3 flex items-center justify-end gap-4 text-muted-foreground">
-        <button 
-          onClick={() => setKaraokeMode(!isKaraokeMode)}
-          className={cn("hover:text-foreground transition-colors", isKaraokeMode && "text-primary")}
-        >
-          <Mic2 size={18} />
-        </button>
-        <button className="hover:text-foreground transition-colors"><ListMusic size={18} /></button>
-        <button className="hover:text-foreground transition-colors"><MonitorSpeaker size={18} /></button>
+      {/* Actions & Volume */}
+      <div className="w-1/4 flex items-center justify-end gap-5">
+        <div className="flex items-center gap-1.5 border-r border-border/20 pr-5">
+          <button 
+            onClick={() => setKaraokeMode(!isKaraokeMode)}
+            className={cn(
+              "w-9 h-9 rounded-xl flex items-center justify-center transition-all active:scale-90",
+              isKaraokeMode ? "bg-primary text-white shadow-lg shadow-primary/20" : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+            )}
+            title="Karaoke Mode"
+          >
+            <Mic2 size={18} />
+          </button>
+          <button 
+            onClick={() => currentSong && toggleLike(currentSong)}
+            className={cn(
+              "w-9 h-9 rounded-xl flex items-center justify-center transition-all active:scale-90 hover:bg-secondary",
+              liked ? "text-red-500" : "text-muted-foreground"
+            )}
+          >
+            <Heart size={18} fill={liked ? "currentColor" : "none"} />
+          </button>
+          <button 
+            onClick={() => currentSong && toggleDownload(currentSong)}
+            className={cn(
+              "w-9 h-9 rounded-xl flex items-center justify-center transition-all active:scale-90 hover:bg-secondary",
+              downloaded ? "text-primary" : "text-muted-foreground"
+            )}
+          >
+            <Download size={18} className={cn(downloaded && "animate-bounce")} />
+          </button>
+        </div>
         
-        <div className="flex items-center gap-2 group w-32 ml-2">
-          <Volume2 size={18} />
-          <div className="flex-1 h-1.5 bg-accent rounded-full overflow-hidden cursor-pointer">
+        <div className="flex items-center gap-3 group/volume w-32 ml-1">
+          <Volume2 size={18} className="text-muted-foreground group-hover/volume:text-primary transition-colors" />
+          <div className="flex-1 h-1 bg-secondary rounded-full overflow-hidden cursor-pointer">
             <div 
-              className="h-full bg-foreground rounded-full transition-colors group-hover:bg-primary"
+              className="h-full bg-primary transition-all"
               style={{ width: `${volume * 100}%` }}
             ></div>
           </div>
