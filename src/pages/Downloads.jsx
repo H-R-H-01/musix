@@ -1,6 +1,6 @@
 import { useLibraryStore } from '../store/useLibraryStore';
 import { usePlayerStore } from '../store/usePlayerStore';
-import { Download, Play, Music, Trash2 } from 'lucide-react';
+import { Download, Play, Music, Trash2, Check } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 export default function Downloads() {

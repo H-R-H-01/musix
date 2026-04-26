@@ -1,21 +1,14 @@
-import { useEffect } from 'react';
-import { Play, Heart, Share2, Download } from 'lucide-react';
+import { useEffect, useMemo } from 'react';
+import { Play, Heart, Share2, Download, Pause } from 'lucide-react';
 import { usePlayerStore } from '../store/usePlayerStore';
 import { useLibraryStore } from '../store/useLibraryStore';
 import { useAuthStore } from '../store/useAuthStore';
 import { cn } from '../lib/utils';
-
-const MOCK_SONGS = [
-  { id: '1', title: 'Neon Nights', artist: 'Synthwave Boy', cover_url: 'https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?auto=format&fit=crop&q=80&w=300&h=300', duration: 215, song_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3' },
-  { id: '2', title: 'Midnight City', artist: 'The Midnight', cover_url: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&q=80&w=300&h=300', duration: 184, song_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' },
-  { id: '3', title: 'Ocean Breeze', artist: 'Chillout Lounge', cover_url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&q=80&w=300&h=300', duration: 245, song_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3' },
-  { id: '4', title: 'Lofi Study', artist: 'Beats to Relax', cover_url: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&q=80&w=300&h=300', duration: 156, song_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3' },
-  { id: '5', title: 'Cyberpunk Drive', artist: 'NightCity', cover_url: 'https://images.unsplash.com/photo-1605806616949-1e87b487cb2a?auto=format&fit=crop&q=80&w=300&h=300', duration: 228, song_url: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3' }
-];
+import { MOCK_SONGS } from '../lib/songs';
 
 export default function Home() {
   const { setCurrentSong, currentSong, isPlaying } = usePlayerStore();
-  const { homeSections, toggleLike, isLiked, addToRecentlyPlayed, recentlyPlayed, toggleDownload, isDownloaded } = useLibraryStore();
+  const { homeSections, toggleLike, isLiked, addToRecentlyPlayed, recentlyPlayed, toggleDownload, isDownloaded, songStats } = useLibraryStore();
   const { user } = useAuthStore();
 
   const handlePlay = (song) => {
@@ -24,6 +17,22 @@ export default function Home() {
     usePlayerStore.getState().setDuration(song.duration);
     usePlayerStore.getState().setQueue(MOCK_SONGS);
   };
+
+  const trendingSongs = useMemo(() => {
+    return [...MOCK_SONGS].sort((a, b) => {
+      const aStats = songStats[a.id] || { listens: 0 };
+      const bStats = songStats[b.id] || { listens: 0 };
+      return bStats.listens - aStats.listens;
+    }).slice(0, 8);
+  }, [songStats]);
+
+  const mostPopularSongs = useMemo(() => {
+    return [...MOCK_SONGS].sort((a, b) => {
+      const aStats = songStats[a.id] || { likes: 0 };
+      const bStats = songStats[b.id] || { likes: 0 };
+      return bStats.likes - aStats.likes;
+    }).slice(0, 6);
+  }, [songStats]);
 
   const handleShare = (song) => {
     navigator.clipboard.writeText(`https://musix.app/song/${song.id}`);
@@ -46,7 +55,10 @@ export default function Home() {
       </div>
 
       {homeSections.map((section, idx) => {
-        const sectionSongs = section.id === 'recently-played' ? recentlyPlayed : MOCK_SONGS;
+        let sectionSongs = MOCK_SONGS;
+        if (section.id === 'recently-played') sectionSongs = recentlyPlayed;
+        else if (section.id === 'trending') sectionSongs = trendingSongs;
+        else if (section.id === 'most-popular') sectionSongs = mostPopularSongs;
         
         if (section.id === 'recently-played' && recentlyPlayed.length === 0) return null;
 
